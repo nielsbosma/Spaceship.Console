@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "gqQq1DGyBGQ=",
+  "success": true,
+  "projectFilePath": "D:\\Repos\\_Personal\\Spaceship.Console\\src\\Spaceship.Console\\Spaceship.Console.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\micro\\.nuget\\packages\\spectre.console\\0.54.0\\spectre.console.0.54.0.nupkg.sha512",
+    "C:\\Users\\micro\\.nuget\\packages\\spectre.console.cli\\0.53.1\\spectre.console.cli.0.53.1.nupkg.sha512",
+    "C:\\Users\\micro\\.nuget\\packages\\yamldotnet\\16.3.0\\yamldotnet.16.3.0.nupkg.sha512"
+  ],
+  "logs": []
+}
