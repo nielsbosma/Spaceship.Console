@@ -11,7 +11,7 @@
 
     <!-- NuGet package metadata -->
     <PackageId>Spaceship.Console</PackageId>
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
     <Authors>nielsbosma</Authors>
     <Description>CLI for the Spaceship API, optimized for LLM agent consumption. YAML-first output.</Description>
     <PackageProjectUrl>https://github.com/nielsbosma/Spaceship.Console</PackageProjectUrl>
@@ -27,7 +27,7 @@
 
   <ItemGroup>
     <PackageReference Include="Spectre.Console" Version="0.54.0" />
-    <PackageReference Include="Spectre.Console.Cli" Version="0.53.1" />
+    <PackageReference Include="Spectre.Console.Cli" Version="1.0.0-alpha.0.6" />
     <PackageReference Include="YamlDotNet" Version="16.3.0" />
   </ItemGroup>
 </Project>

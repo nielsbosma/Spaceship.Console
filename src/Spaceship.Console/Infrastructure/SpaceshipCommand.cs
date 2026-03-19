@@ -5,7 +5,7 @@ namespace Spaceship.Console.Infrastructure;
 
 public abstract class SpaceshipCommand<TSettings> : AsyncCommand<TSettings> where TSettings : GlobalSettings
 {
-    public sealed override async Task<int> ExecuteAsync(CommandContext context, TSettings settings, CancellationToken cancellation)
+    protected sealed override async Task<int> ExecuteAsync(CommandContext context, TSettings settings, CancellationToken cancellation)
     {
         try
         {

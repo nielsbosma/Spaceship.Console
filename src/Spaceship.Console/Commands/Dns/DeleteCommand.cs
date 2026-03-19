@@ -30,7 +30,13 @@ public sealed class DeleteCommand : SpaceshipCommand<DeleteSettings>
             json = await System.Console.In.ReadToEndAsync();
 
         var body = JsonSerializer.Deserialize<JsonElement>(json);
-        var result = await client.DeleteAsync($"/domains/{settings.Domain}/dns-records", ToObject(body));
+        // API expects {"items": [...]} — wrap bare arrays automatically
+        object payload;
+        if (body.ValueKind == JsonValueKind.Array)
+            payload = new { items = ToObject(body) };
+        else
+            payload = ToObject(body);
+        var result = await client.DeleteAsync($"/dns/records/{settings.Domain}", payload);
         return ToObject(result);
     }
 }

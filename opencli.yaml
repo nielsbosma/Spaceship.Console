@@ -1,0 +1,600 @@
+opencli: "0.1"
+
+info:
+  title: spaceship
+  version: "1.0.0"
+  summary: CLI for the Spaceship domain registrar API
+  description: >
+    A command-line interface for the Spaceship API that manages domains,
+    DNS records, contacts, SellerHub listings, and async operations.
+    Designed for automation and LLM-friendly output (YAML-first).
+  contact:
+    url: https://github.com/nielsbosma/Spaceship.Console
+  license:
+    identifier: MIT
+
+conventions:
+  groupOptions: true
+  optionArgumentSeparator: " "
+
+options:
+  - name: --api-key
+    description: Override the SPACESHIP_API_KEY environment variable
+    arguments:
+      - name: key
+        required: true
+        arity: { minimum: 1, maximum: 1 }
+  - name: --api-secret
+    description: Override the SPACESHIP_API_SECRET environment variable
+    arguments:
+      - name: secret
+        required: true
+        arity: { minimum: 1, maximum: 1 }
+  - name: --format
+    description: Output format
+    arguments:
+      - name: format
+        required: true
+        arity: { minimum: 1, maximum: 1 }
+        acceptedValues:
+          - yaml
+          - json
+          - table
+  - name: --no-color
+    description: Disable colored output
+  - name: --verbose
+    description: Print HTTP method, URL, and status code to stderr
+  - name: --version
+    description: Print version and exit
+  - name: --help
+    description: Print help and exit
+    aliases:
+      - -h
+
+exitCodes:
+  - code: 0
+    description: Success
+  - code: 1
+    description: User or input error
+  - code: 2
+    description: API or network error
+
+commands:
+  # ── domains ────────────────────────────────────────────
+  - name: domains
+    description: Domain management
+    commands:
+      - name: list
+        description: List all domains
+        options:
+          - name: --order-by
+            description: Sort field
+            arguments:
+              - name: sort
+                required: true
+                arity: { minimum: 1, maximum: 1 }
+                acceptedValues:
+                  - name
+                  - unicodeName
+                  - registrationDate
+                  - expirationDate
+          - name: --take
+            description: Number of items to return (1-100)
+            arguments:
+              - name: count
+                required: true
+                arity: { minimum: 1, maximum: 1 }
+          - name: --skip
+            description: Number of items to skip
+            arguments:
+              - name: count
+                required: true
+                arity: { minimum: 1, maximum: 1 }
+
+      - name: get
+        description: Get domain details
+        arguments:
+          - name: domain
+            required: true
+            description: Domain name in ASCII format
+
+      - name: check
+        description: Check domain availability
+        arguments:
+          - name: domain
+            required: true
+            description: Domain name to check
+
+      - name: check-batch
+        description: Check availability of multiple domains
+        arguments:
+          - name: domains
+            required: true
+            description: Comma-separated domain names (max 20)
+
+      - name: register
+        description: Register a new domain
+        arguments:
+          - name: domain
+            required: true
+            description: Domain name to register
+        options:
+          - name: --years
+            description: Registration period (1-10)
+            arguments:
+              - name: years
+                required: true
+                arity: { minimum: 1, maximum: 1 }
+          - name: --auto-renew
+            description: Enable auto-renewal
+          - name: --privacy
+            description: Privacy protection level
+            arguments:
+              - name: level
+                required: true
+                arity: { minimum: 1, maximum: 1 }
+                acceptedValues:
+                  - high
+                  - public
+          - name: --registrant
+            required: true
+            description: Registrant contact ID
+            arguments:
+              - name: id
+                required: true
+                arity: { minimum: 1, maximum: 1 }
+          - name: --admin
+            description: Admin contact ID
+            arguments:
+              - name: id
+                required: true
+                arity: { minimum: 1, maximum: 1 }
+          - name: --tech
+            description: Tech contact ID
+            arguments:
+              - name: id
+                required: true
+                arity: { minimum: 1, maximum: 1 }
+          - name: --billing
+            description: Billing contact ID
+            arguments:
+              - name: id
+                required: true
+                arity: { minimum: 1, maximum: 1 }
+
+      - name: delete
+        description: Delete a domain
+        arguments:
+          - name: domain
+            required: true
+            description: Domain name to delete
+
+      - name: renew
+        description: Renew a domain
+        arguments:
+          - name: domain
+            required: true
+            description: Domain name to renew
+        options:
+          - name: --years
+            description: Renewal period (1-10)
+            arguments:
+              - name: years
+                required: true
+                arity: { minimum: 1, maximum: 1 }
+          - name: --expiration-date
+            required: true
+            description: Current expiration date (ISO 8601)
+            arguments:
+              - name: date
+                required: true
+                arity: { minimum: 1, maximum: 1 }
+
+      - name: restore
+        description: Restore a deleted domain
+        arguments:
+          - name: domain
+            required: true
+            description: Domain name to restore
+
+      - name: autorenew
+        description: Enable or disable auto-renewal
+        arguments:
+          - name: domain
+            required: true
+            description: Domain name
+        options:
+          - name: --enable
+            description: Enable auto-renewal
+          - name: --disable
+            description: Disable auto-renewal
+
+      - name: nameservers
+        description: Set domain nameservers
+        arguments:
+          - name: domain
+            required: true
+            description: Domain name
+        options:
+          - name: --provider
+            required: true
+            description: Nameserver provider
+            arguments:
+              - name: provider
+                required: true
+                arity: { minimum: 1, maximum: 1 }
+                acceptedValues:
+                  - basic
+                  - custom
+          - name: --hosts
+            description: Comma-separated nameserver hosts (2-12, required for custom)
+            arguments:
+              - name: hosts
+                required: true
+                arity: { minimum: 1, maximum: 1 }
+
+      - name: contacts
+        description: Set domain contacts
+        arguments:
+          - name: domain
+            required: true
+            description: Domain name
+        options:
+          - name: --registrant
+            required: true
+            description: Registrant contact ID
+            arguments:
+              - name: id
+                required: true
+                arity: { minimum: 1, maximum: 1 }
+          - name: --admin
+            description: Admin contact ID
+            arguments:
+              - name: id
+                required: true
+                arity: { minimum: 1, maximum: 1 }
+          - name: --tech
+            description: Tech contact ID
+            arguments:
+              - name: id
+                required: true
+                arity: { minimum: 1, maximum: 1 }
+          - name: --billing
+            description: Billing contact ID
+            arguments:
+              - name: id
+                required: true
+                arity: { minimum: 1, maximum: 1 }
+
+      - name: privacy
+        description: Set domain privacy level
+        arguments:
+          - name: domain
+            required: true
+            description: Domain name
+        options:
+          - name: --level
+            required: true
+            description: Privacy protection level
+            arguments:
+              - name: level
+                required: true
+                arity: { minimum: 1, maximum: 1 }
+                acceptedValues:
+                  - public
+                  - high
+
+      - name: auth-code
+        description: Get transfer authorization code
+        arguments:
+          - name: domain
+            required: true
+            description: Domain name
+
+      - name: transfer
+        description: Transfer a domain in
+        arguments:
+          - name: domain
+            required: true
+            description: Domain name to transfer
+        options:
+          - name: --auto-renew
+            description: Enable auto-renewal
+          - name: --privacy
+            description: Privacy protection level
+            arguments:
+              - name: level
+                required: true
+                arity: { minimum: 1, maximum: 1 }
+                acceptedValues:
+                  - high
+                  - public
+          - name: --registrant
+            required: true
+            description: Registrant contact ID
+            arguments:
+              - name: id
+                required: true
+                arity: { minimum: 1, maximum: 1 }
+          - name: --admin
+            description: Admin contact ID
+            arguments:
+              - name: id
+                required: true
+                arity: { minimum: 1, maximum: 1 }
+          - name: --tech
+            description: Tech contact ID
+            arguments:
+              - name: id
+                required: true
+                arity: { minimum: 1, maximum: 1 }
+          - name: --billing
+            description: Billing contact ID
+            arguments:
+              - name: id
+                required: true
+                arity: { minimum: 1, maximum: 1 }
+          - name: --auth-code
+            description: Transfer authorization code
+            arguments:
+              - name: code
+                required: true
+                arity: { minimum: 1, maximum: 1 }
+
+      - name: transfer-status
+        description: Get domain transfer status
+        arguments:
+          - name: domain
+            required: true
+            description: Domain name
+
+      - name: transfer-lock
+        description: Lock or unlock domain transfers
+        arguments:
+          - name: domain
+            required: true
+            description: Domain name
+        options:
+          - name: --lock
+            description: Lock the domain
+          - name: --unlock
+            description: Unlock the domain
+
+  # ── dns ────────────────────────────────────────────────
+  - name: dns
+    description: DNS record management
+    commands:
+      - name: list
+        description: List DNS records for a domain
+        arguments:
+          - name: domain
+            required: true
+            description: Domain name
+        options:
+          - name: --type
+            description: Filter by record type
+            arguments:
+              - name: type
+                required: true
+                arity: { minimum: 1, maximum: 1 }
+                acceptedValues:
+                  - A
+                  - AAAA
+                  - CNAME
+                  - MX
+                  - TXT
+                  - SRV
+                  - NS
+          - name: --name
+            description: Filter by record name
+            arguments:
+              - name: name
+                required: true
+                arity: { minimum: 1, maximum: 1 }
+          - name: --take
+            description: Number of items to return (1-100)
+            arguments:
+              - name: count
+                required: true
+                arity: { minimum: 1, maximum: 1 }
+          - name: --skip
+            description: Number of items to skip
+            arguments:
+              - name: count
+                required: true
+                arity: { minimum: 1, maximum: 1 }
+
+      - name: save
+        description: Create or update DNS records from stdin or file
+        arguments:
+          - name: domain
+            required: true
+            description: Domain name
+        options:
+          - name: --file
+            description: Path to JSON file with records (reads stdin if omitted)
+            arguments:
+              - name: path
+                required: true
+                arity: { minimum: 1, maximum: 1 }
+
+      - name: delete
+        description: Delete DNS records from stdin or file
+        arguments:
+          - name: domain
+            required: true
+            description: Domain name
+        options:
+          - name: --file
+            description: Path to JSON file with records (reads stdin if omitted)
+            arguments:
+              - name: path
+                required: true
+                arity: { minimum: 1, maximum: 1 }
+
+  # ── contacts ───────────────────────────────────────────
+  - name: contacts
+    description: Contact management
+    commands:
+      - name: save
+        description: Create or update a contact
+        options:
+          - name: --first-name
+            required: true
+            description: First name
+            arguments:
+              - name: name
+                required: true
+                arity: { minimum: 1, maximum: 1 }
+          - name: --last-name
+            required: true
+            description: Last name
+            arguments:
+              - name: name
+                required: true
+                arity: { minimum: 1, maximum: 1 }
+          - name: --email
+            required: true
+            description: Email address
+            arguments:
+              - name: email
+                required: true
+                arity: { minimum: 1, maximum: 1 }
+          - name: --address
+            required: true
+            description: Street address
+            arguments:
+              - name: address
+                required: true
+                arity: { minimum: 1, maximum: 1 }
+          - name: --city
+            required: true
+            description: City
+            arguments:
+              - name: city
+                required: true
+                arity: { minimum: 1, maximum: 1 }
+          - name: --country
+            required: true
+            description: Country code (ISO 3166-1 alpha-2)
+            arguments:
+              - name: code
+                required: true
+                arity: { minimum: 1, maximum: 1 }
+          - name: --organization
+            description: Organization name
+            arguments:
+              - name: org
+                required: true
+                arity: { minimum: 1, maximum: 1 }
+          - name: --address2
+            description: Address line 2
+            arguments:
+              - name: address
+                required: true
+                arity: { minimum: 1, maximum: 1 }
+          - name: --state
+            description: State or province
+            arguments:
+              - name: state
+                required: true
+                arity: { minimum: 1, maximum: 1 }
+          - name: --postal-code
+            description: Postal or ZIP code
+            arguments:
+              - name: code
+                required: true
+                arity: { minimum: 1, maximum: 1 }
+
+      - name: get
+        description: Get contact details
+        arguments:
+          - name: id
+            required: true
+            description: Contact ID
+
+  # ── sellerhub ──────────────────────────────────────────
+  - name: sellerhub
+    description: SellerHub management
+    commands:
+      - name: list
+        description: List SellerHub domains
+        options:
+          - name: --take
+            description: Number of items to return (1-100)
+            arguments:
+              - name: count
+                required: true
+                arity: { minimum: 1, maximum: 1 }
+          - name: --skip
+            description: Number of items to skip
+            arguments:
+              - name: count
+                required: true
+                arity: { minimum: 1, maximum: 1 }
+
+      - name: get
+        description: Get SellerHub domain details
+        arguments:
+          - name: id
+            required: true
+            description: SellerHub domain ID
+
+      - name: create
+        description: Create a SellerHub listing from stdin or file
+        options:
+          - name: --file
+            description: Path to JSON file with domain details (reads stdin if omitted)
+            arguments:
+              - name: path
+                required: true
+                arity: { minimum: 1, maximum: 1 }
+
+      - name: update
+        description: Update a SellerHub listing from stdin or file
+        arguments:
+          - name: id
+            required: true
+            description: SellerHub domain ID
+        options:
+          - name: --file
+            description: Path to JSON file with fields to update (reads stdin if omitted)
+            arguments:
+              - name: path
+                required: true
+                arity: { minimum: 1, maximum: 1 }
+
+      - name: delete
+        description: Delete a SellerHub listing
+        arguments:
+          - name: id
+            required: true
+            description: SellerHub domain ID
+
+      - name: checkout
+        description: Checkout a SellerHub domain from stdin or file
+        options:
+          - name: --file
+            description: Path to JSON file with checkout details (reads stdin if omitted)
+            arguments:
+              - name: path
+                required: true
+                arity: { minimum: 1, maximum: 1 }
+
+      - name: verification
+        description: Get verification records for a SellerHub domain
+        arguments:
+          - name: id
+            required: true
+            description: SellerHub domain ID
+
+  # ── operations ─────────────────────────────────────────
+  - name: operations
+    description: Async operation tracking
+    commands:
+      - name: get
+        description: Get async operation status
+        arguments:
+          - name: id
+            required: true
+            description: Operation ID
